@@ -19,11 +19,11 @@ function* fetchTopics(){
 }
 
 // Individual exports for testing
-export function* fetchTopicsSaga() {
+export function* defaultSaga() {
   yield* takeLatest(REQUEST_TOPICS, fetchTopics);
 }
 
 // All sagas to be loaded
 export default [
-  fetchTopicsSaga,
+  defaultSaga,
 ];
