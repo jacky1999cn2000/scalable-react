@@ -51,7 +51,7 @@ export default function createRoutes(store) {
         "/" (HomePage), and get rendered there (in HomePage's index.js, via "{this.props.children}").
 
         P.S. don't forget to add identity to injectSagas() method since we've made decision to make sagas singleton
-        P.S.S. the path parameter can be retrieved in LinkListContainer's selectors.js via props 
+        P.S.S. the path parameter can be retrieved in LinkListContainer's selectors.js via props
       */
       childRoutes: [
         {
@@ -69,6 +69,27 @@ export default function createRoutes(store) {
             importModules.then(([reducer, sagas, component]) => {
               injectReducer('linkListContainer', reducer.default);
               injectSagas('linkListContainer', sagas.default);
+              renderRoute(component);
+            });
+
+            importModules.catch(errorLoading);
+          },
+        },
+        {
+          path: '/login',
+          name: 'loginContainer',
+          getComponent(nextState, cb) {
+            const importModules = Promise.all([
+              System.import('containers/LoginContainer/reducer'),
+              System.import('containers/LoginContainer/sagas'),
+              System.import('containers/LoginContainer'),
+            ]);
+
+            const renderRoute = loadModule(cb);
+
+            importModules.then(([reducer, sagas, component]) => {
+              injectReducer('loginContainer', reducer.default);
+              injectSagas('loginContainer', sagas.default);
               renderRoute(component);
             });
 
