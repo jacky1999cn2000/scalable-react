@@ -14,7 +14,7 @@ function Link({ link }) {
     <div className={styles.link}>
       <div className={styles.votingContainer}>
         <div className={styles.votingCount}>
-          {link.voteCount}
+          {link.voteCount} sss
         </div>
       </div>
       <div className={styles.detailsContainer}>

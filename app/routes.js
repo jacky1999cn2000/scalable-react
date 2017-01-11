@@ -25,8 +25,6 @@ export default function createRoutes(store) {
           System.import('containers/HomePage'),
           System.import('containers/NavigationContainer/reducer'),
           System.import('containers/NavigationContainer/sagas'),
-          System.import('containers/LinkListContainer/reducer'),
-          System.import('containers/LinkListContainer/sagas'),
         ]);
 
         const renderRoute = loadModule(cb);
@@ -40,13 +38,44 @@ export default function createRoutes(store) {
         ]) => {
           injectReducer('navigationContainer', navigationReducer.default);
           injectSagas('navigationContainer', navigationSagas.default);
-          injectReducer('linkListContainer', linkListReducer.default);
-          injectSagas('linkListContainer', linkListSagas.default);
           renderRoute(component);
         });
 
         importModules.catch(errorLoading);
       },
+      /*
+        we used "npm run generate route" (render "LinkListContainer", route "/topics/:topicName") to let the
+        scaffolding framework create the route for us;
+        however, we want to make this route a child route of our main route, which means when this route was
+        hit, the content (LinkListContainer) will be passed on as props called "children" to the main route
+        "/" (HomePage), and get rendered there (in HomePage's index.js, via "{this.props.children}").
+
+        P.S. don't forget to add identity to injectSagas() method since we've made decision to make sagas singleton
+        P.S.S. the path parameter can be retrieved in LinkListContainer's selectors.js via props 
+      */
+      childRoutes: [
+        {
+          path: '/topics/:topicName',
+          name: 'linkListContainer',
+          getComponent(nextState, cb) {
+            const importModules = Promise.all([
+              System.import('containers/LinkListContainer/reducer'),
+              System.import('containers/LinkListContainer/sagas'),
+              System.import('containers/LinkListContainer'),
+            ]);
+
+            const renderRoute = loadModule(cb);
+
+            importModules.then(([reducer, sagas, component]) => {
+              injectReducer('linkListContainer', reducer.default);
+              injectSagas('linkListContainer', sagas.default);
+              renderRoute(component);
+            });
+
+            importModules.catch(errorLoading);
+          },
+        },
+      ],
     }, {
       path: '*',
       name: 'notfound',
